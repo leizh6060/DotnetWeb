@@ -1,0 +1,33 @@
+name: .NET Build and Package
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout Code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '8.0.x' # Use your target version (e.g., 6.0, 7.0, 9.0)
+
+    - name: Restore Dependencies
+      run: dotnet restore
+
+    - name: Build Project
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Create Package (NuGet)
+      run: dotnet pack --configuration Release --no-build --output ./dist
+
+    - name: Upload Artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: hello-world-package
+        path: ./dist/*.nupkg
